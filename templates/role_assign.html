@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Role Assignment</title>
+    <link rel="stylesheet" href="/static/role_assign.css">
+</head>
+<body>
+
+<div class="container">
+
+<h2>Assign Roles to User</h2>
+
+<label>User ID</label>
+<input type="number" id="user_id" placeholder="Enter User ID">
+
+<h3>Select Roles</h3>
+
+<div id="roles_list">
+        <label>
+        <input type="radio" name="role" value="1"> Admin
+        </label><br>
+
+        <label>
+        <input type="radio" name="role" value="2"> Analyst
+        </label><br>
+
+        <label>
+        <input type="radio" name="role" value="3"> Auditor
+        </label><br>
+        <label>
+        <input type="radio" name ="role" value="4"> Client
+        </label><br>
+</div>
+
+<button onclick="assignRoles()">Submit</button>
+
+<p id="message"></p>
+
+</div>
+
+<script src="/static/role_assign.js?v=3"></script>
+
+</body>
+</html>
