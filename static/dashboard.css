@@ -41,13 +41,49 @@ overflow:auto;
   font-size: 13px;
   color: #333;
   transition: background 0.15s;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .history-item:hover {
   background: #e0e0e0;
+}
+
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.history-delete-btn {
+  background: #e74c3c;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1;
+  padding: 2px 6px;
+  border-radius: 4px;
+  opacity: 0.95;
+  min-width: 50px;
+  text-align: center;
+}
+
+.history-delete-btn:hover {
+  opacity: 1;
+}
+
+.history-item {
+  min-height: 38px;
+}
+
+.history-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.history-delete-btn {
+  min-width: 24px;
+  min-height: 24px;
+  margin-left: 8px;
 }
 
 .history-item.active {
@@ -58,6 +94,14 @@ overflow:auto;
 #history {
   padding: 0;
   margin: 0;
+}
+
+.history-title {
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  padding-right: 8px;
 }
 
 .main{

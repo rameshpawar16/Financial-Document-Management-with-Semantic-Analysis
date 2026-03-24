@@ -31,7 +31,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Home pahe for registion
+# Home pages
 @app.get("/", response_class=HTMLResponse)
 def register_page(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
@@ -40,6 +40,15 @@ def register_page(request: Request):
 def login_page(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
+def login_required(func):
+    def inner(request: Request):
+        token = request.get("token")
+        if not token:
+            raise HTTPException(status_code=401, detail="Please login first")
+        return func(request)
+    return inner
+
+@login_required
 @app.get("/dashboard", response_class=HTMLResponse)
 def dashboard(request: Request):
     return templates.TemplateResponse("dashboard.html", {"request": request})

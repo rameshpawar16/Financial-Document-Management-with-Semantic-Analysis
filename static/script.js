@@ -31,33 +31,31 @@ const email = document.getElementById("email").value
 const password = document.getElementById("password").value
 
 const response = await fetch("http://127.0.0.1:8000/login",{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-email: email,
-password: password
+    method:"POST",
+    headers:{
+        "Content-Type":"application/json"
+    },
+    body:JSON.stringify({
+        email: email,
+        password: password
+    })
 })
-})
 
-const data = await response.json()
+    const data = await response.json()
 
-console.log("LOGIN RESPONSE:", data)
+    const messageBox = document.getElementById("message")
 
-const messageBox = document.getElementById("message")
+    if(!response.ok){
+        messageBox.innerText = data.detail
+        messageBox.style.color = "red"
+        return
+    }
 
-if(!response.ok){
-messageBox.innerText = data.detail
-messageBox.style.color = "red"
-return
-}
+    messageBox.innerText = "Login successful"
+    messageBox.style.color = "green"
 
-messageBox.innerText = "Login successful"
-messageBox.style.color = "green"
+    localStorage.setItem("token", data.token)
 
-localStorage.setItem("token", data.token)
-
-window.location.href = "/dashboard"
+    window.location.href = "/dashboard"
 
 }

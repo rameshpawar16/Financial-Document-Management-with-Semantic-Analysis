@@ -65,6 +65,24 @@ def get_chat_sessions(
     ]
 
 
+# DELETE /chat/sessions/{session_id}
+@chat_router.delete("/sessions/{session_id}")
+def delete_chat_session(
+    session_id: str,
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user)
+):
+    deleted = db.query(ChatHistory).filter(
+        ChatHistory.session_id == session_id,
+        ChatHistory.user_email == user["email"]
+    ).delete(synchronize_session=False)
+    db.commit()
+
+    if deleted == 0:
+        return {"message": "No chat session found or already deleted"}
+    return {"message": "Chat session deleted"}
+
+
 # GET /chat/history/{session_id} 
 @chat_router.get("/history/{session_id}")
 def get_chat_history(
