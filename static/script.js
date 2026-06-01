@@ -1,61 +1,56 @@
 // register..
 
-let registerForm = document.getElementById("registerForm")
+let registerForm = document.getElementById("registerForm");
 
-if(registerForm){
+if (registerForm) {
+  registerForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-    registerForm.addEventListener("submit", async (e)=>{
+    let formData = new FormData(registerForm);
 
-        e.preventDefault()
+    let res = await fetch("/register", {
+      method: "POST",
+      body: formData,
+    });
 
-        let formData = new FormData(registerForm)
+    let data = await res.json();
 
-        let res = await fetch("/register",{
-            method:"POST",
-            body:formData
-        })
-
-        let data = await res.json()
-
-        document.getElementById("msg").innerText=data.message
-
-    })
+    document.getElementById("msg").innerText = data.message;
+    document.getElementById("user_id").innerText = data.user_id;
+  });
 }
-
 
 // login..
 
-async function login(){
+async function login() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
 
-const email = document.getElementById("email").value
-const password = document.getElementById("password").value
-
-const response = await fetch("http://127.0.0.1:8000/login",{
-    method:"POST",
-    headers:{
-        "Content-Type":"application/json"
+  const response = await fetch("http://127.0.0.1:8000/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
     },
-    body:JSON.stringify({
-        email: email,
-        password: password
-    })
-})
+    body: JSON.stringify({
+      email: email,
+      password: password,
+    }),
+  });
 
-    const data = await response.json()
+  const data = await response.json();
 
-    const messageBox = document.getElementById("message")
+  const messageBox = document.getElementById("message");
 
-    if(!response.ok){
-        messageBox.innerText = data.detail
-        messageBox.style.color = "red"
-        return
-    }
+  if (!response.ok) {
+    messageBox.innerText = data.detail;
+    messageBox.style.color = "red";
+    return;
+  }
 
-    messageBox.innerText = "Login successful"
-    messageBox.style.color = "green"
+  messageBox.innerText = "Login successful";
+  messageBox.style.color = "green";
 
-    localStorage.setItem("token", data.token)
+  localStorage.setItem("token", data.token);
 
-    window.location.href = "/dashboard"
-
+  window.location.href = "/dashboard";
 }

@@ -34,17 +34,21 @@ overflow:auto;
 
 .history-item {
   list-style: none;
-  padding: 8px 10px;
-  margin-bottom: 4px;
-  border-radius: 6px;
+  padding: 6px 14px;
+  margin-bottom: 6px;
+  border-radius: 20px;
   cursor: pointer;
   font-size: 13px;
-  color: #333;
-  transition: background 0.15s;
+  color: #000;
+  background: #fff;
+  border: 2px solid #cbd5e1;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  transition: all 0.2s ease;
 }
 
 .history-item:hover {
-  background: #e0e0e0;
+  background: #f8fafc;
+  border-color: #94a3b8;
 }
 
 .history-item {
@@ -72,7 +76,7 @@ overflow:auto;
 }
 
 .history-item {
-  min-height: 38px;
+  min-height: 32px;
 }
 
 .history-title {
@@ -87,8 +91,10 @@ overflow:auto;
 }
 
 .history-item.active {
-  background: #3b82f6;
-  color: white;
+  background: #eff6ff;
+  border-color: #3b82f6;
+  color: #1d4ed8;
+  font-weight: 500;
 }
 
 #history {
@@ -102,6 +108,10 @@ overflow:auto;
   white-space: nowrap;
   text-overflow: ellipsis;
   padding-right: 8px;
+  color: #000;
+}
+.history-title::first-letter {
+  text-transform: uppercase;
 }
 
 .main{
@@ -120,11 +130,14 @@ border-radius:5px;
 .chat-container {
   display: flex;
   flex-direction: column;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #c7d2c7;
   border-radius: 12px;
   overflow: hidden;
-  height: 400px;
-  background: linear-gradient(135deg, #f0f4ff 0%, #f5f0ff 50%, #fef5f0 100%);
+  height: 480px;
+  background-color: #76b073;
+  background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'), linear-gradient(135deg, #ddea8d 0%, #90c085 50%, #58a06e 100%);
+  background-blend-mode: overlay;
+  background-size: 400px, auto;
 }
 
 /* ── Avatar Circle ────────────────────────────────────────── */
@@ -297,7 +310,7 @@ position:relative;
   border:none;
   background:none;
   cursor:pointer;
-  padding:6px;
+  padding:12px;
   border-radius:6px;
   color:#333;
   transition: background 0.2s;
@@ -313,14 +326,17 @@ right:0;
 top:35px;
 background:white;
 border:1px solid #ddd;
-width:150px;
+min-width:250px;
+width:max-content;
 box-shadow:0 2px 10px rgba(0,0,0,0.2);
 border-radius:6px;
+z-index: 1000;
 }
 
 .dropdown div{
-padding:10px;
+padding:20px;
 cursor:pointer;
+font-size:18px;
 }
 
 .dropdown div:hover{

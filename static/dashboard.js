@@ -2,6 +2,7 @@ console.log("Dashboard JS Loaded");
 
 // Session management
 let currentSessionId = generateSessionId();
+let currentUserName = "";
 
 function generateSessionId() {
   return (
@@ -35,23 +36,35 @@ async function loadDashboard() {
     const user = await response.json();
     const role = user.role || user["role"];
 
-    document.getElementById("currentUser").innerText =
-      user.name || user["name"] || user.email;
+    currentUserName = user.name || user["name"] || user.email || "User";
+    document.getElementById("currentUser").innerText = currentUserName;
     const nameStr = user.name || user["name"] || user.email || "U";
     document.getElementById("avatarLetter").innerText = nameStr
       .charAt(0)
       .toUpperCase();
 
-    if (role !== "admin") {
-      document.getElementById("addRoleBtn").style.display = "none";
-      document.getElementById("deleteDocsBtn").style.display = "none";
-    } else {
+    if (role === "admin") {
       document.getElementById("addRoleBtn").style.display = "block";
-      document.getElementById("deleteDocsBtn").style.display = "inline-block";
+      document.getElementById("removeUserBtn").style.display = "block";
+      document.getElementById("deleteDocsBtn").style.display = "block";
+      document.getElementById("uploadBtn").style.display = "block";
+    } else if(role === "financial analyst") {
+      document.getElementById("addRoleBtn").style.display = "none";
+      document.getElementById("removeUserBtn").style.display = "none";
+      document.getElementById("deleteDocsBtn").style.display = "none";
+      document.getElementById("uploadBtn").style.display = "block";
+    } else {
+      document.getElementById("addRoleBtn").style.display = "none";
+      document.getElementById("removeUserBtn").style.display = "none";
+      document.getElementById("deleteDocsBtn").style.display = "none";
+      document.getElementById("uploadBtn").style.display = "none";
     }
 
     // Load chat history sidebar
     loadChatSessions();
+    if (document.getElementById("chatMessages").innerHTML.trim() === "") {
+        addBubble("bot", `Hello! How can I help you, ${currentUserName}?`);
+    }
   } catch (err) {
     console.error("Failed to load dashboard:", err);
   }
@@ -122,7 +135,13 @@ async function showDocuments() {
     });
 
     const docs = await response.json();
-    if (!docs || docs.length === 0) {
+    
+    if (!response.ok) {
+      docListDiv.innerHTML = `<p style="color:red">Error: ${docs.detail || "Failed to load documents"}</p>`;
+      return;
+    }
+    
+    if (!docs || !Array.isArray(docs) || docs.length === 0) {
       docListDiv.innerHTML = "<p>No documents found.</p>";
       return;
     }
@@ -235,7 +254,7 @@ async function askQuestion() {
         responseText = "No results found.";
       }
     } else {
-      const errMsg = "❌ " + (data.detail || "Something went wrong");
+      const errMsg = "Oops " + (data.detail || "Something went wrong");
       addBubble("bot", errMsg);
       responseText = errMsg;
     }
@@ -298,14 +317,7 @@ async function loadChatSessions() {
       titleSpan.className = "history-title";
       titleSpan.textContent = session.title;
 
-      const deleteBtn = document.createElement("button");
-      deleteBtn.className = "history-delete-btn";
-      deleteBtn.textContent = "Delete";
-      deleteBtn.title = "Delete this chat";
-      deleteBtn.onclick = (e) => deleteChatSession(e, session.session_id);
-
       li.appendChild(titleSpan);
-      li.appendChild(deleteBtn);
       historyList.appendChild(li);
     });
   } catch (err) {
@@ -320,6 +332,9 @@ async function loadSession(sessionId) {
 
   // Clear chat area
   document.getElementById("chatMessages").innerHTML = "";
+  if (currentUserName) {
+      addBubble("bot", `Hello! How can I help you, ${currentUserName}?`);
+  }
 
   try {
     const response = await fetch(
@@ -384,11 +399,51 @@ async function deleteChatSession(event, sessionId) {
   }
 }
 
+// Delete current chat (from top right icon)
+async function deleteCurrentChat() {
+  if (!confirm("Are you sure you want to delete this chat session?")) return;
+
+  const token = localStorage.getItem("token");
+  try {
+    const response = await fetch(
+      `http://localhost:8000/chat/sessions/${currentSessionId}`,
+      {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    
+    // If it's a new empty session that isn't saved yet, it returns 404
+    if (response.status === 404) {
+       startNewChat();
+       return;
+    }
+
+    const data = await response.json();
+    if (response.ok) {
+      alert(data.message || "Chat session deleted");
+      startNewChat();
+      loadChatSessions();
+    } else {
+      alert(
+        "Failed to delete session: " +
+          (data.detail || data.message || "Unknown error"),
+      );
+    }
+  } catch (err) {
+    alert("Error deleting chat session: " + err.message);
+  }
+}
+
 // Start a new chat
 function startNewChat() {
   currentSessionId = generateSessionId();
   document.getElementById("chatMessages").innerHTML = "";
   document.getElementById("question").value = "";
+
+  if (currentUserName) {
+      addBubble("bot", `Hello! How can I help you, ${currentUserName}?`);
+  }
 
   // Remove active highlight
   document
@@ -414,4 +469,39 @@ window.onload = function () {
   loadDashboard();
   document.getElementById("logoutBtn").onclick = logout;
   document.getElementById("addRoleBtn").onclick = addRole;
+  this.document.getElementById("removeUserBtn").onclick = remove_user;
 };
+
+
+
+// remove user from database(admin only)...
+let remove_user = async () => {
+
+  const token = localStorage.getItem("token");
+  
+  if (!token) {
+    alert("Please login first");
+    window.location.href = "/";
+    return;
+  }
+
+  const userId = prompt("Enter the user ID to remove:");
+  if (!userId) return alert("User ID is required to remove a user.");
+
+  try {
+    const response = await fetch(`http://localhost:8000/users/${userId}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await response.json();
+    if (response.ok) {
+      alert(data.message || "User removed successfully!");
+      loadDashboard();
+    } else {
+      alert("Failed to remove user: " + (data.detail || "Unknown error"));
+    }
+  } catch (err) {
+    alert("Error removing user: " + err.message + "try after sometime or check with admin");
+  }
+};  
+

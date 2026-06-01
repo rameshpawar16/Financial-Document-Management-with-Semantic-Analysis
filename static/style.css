@@ -29,3 +29,8 @@ button{
     border:none;
     cursor:pointer;
 }
+
+p{
+    margin:10px 0;
+    color:green;
+}

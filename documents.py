@@ -7,6 +7,7 @@ from rag.pipeline import process_document
 import os
 import shutil
 from datetime import datetime
+from rag.qdrant_db import delete_document_vectors
 
 documents_router = APIRouter(prefix="/documents", tags=["Documents"])
 
@@ -146,6 +147,12 @@ def delete_document(
     # Remove the physical file
     if os.path.exists(doc.file_path):
         os.remove(doc.file_path)
+
+    # Remove vector embeddings from Qdrant
+    try:
+        delete_document_vectors(document_id)
+    except Exception as e:
+        print(f"Warning: Failed to delete vector embeddings for document {document_id}: {e}")
 
     db.delete(doc)
     db.commit()
